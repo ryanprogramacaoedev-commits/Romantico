@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Giovana</title>
+
+<style>
+body{
+  margin:0;
+  overflow:hidden;
+  background:rgb(223, 184, 197);
+}
+
+/* URSOS */
+.urso{
+  position:absolute;
+  width:280px;
+  bottom:0;
+  opacity:0;
+}
+
+.esquerda{
+  left:0;
+  transform:translateX(-300px);
+}
+
+.direita{
+  right:0;
+  transform:translateX(300px);
+}
+
+.aparecer-esquerda{
+  animation:entrarEsq 1.5s forwards;
+}
+
+.aparecer-direita{
+  animation:entrarDir 1.5s forwards;
+}
+
+@keyframes entrarEsq{
+  to{
+    transform:translateX(0);
+    opacity:1;
+  }
+}
+
+@keyframes entrarDir{
+  to{
+    transform:translateX(0);
+    opacity:1;
+  }
+}
+
+canvas{
+  position:absolute;
+  top:0;
+  left:0;
+}
+</style>
+</head>
+
+<body>
+
+<img src="urso-esquerda.png" class="urso esquerda">
+<img src="urso-direita.png" class="urso direita">
+
+<canvas id="canvas"></canvas>
+
+<script>
+
+const linha1 = "fernanda⭐,";
+const linha2 = "Voce é linda";
+
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const ursoEsq = document.querySelector(".esquerda");
+const ursoDir = document.querySelector(".direita");
+
+/* ENTRADA DOS URSOS */
+setTimeout(()=> ursoEsq.classList.add("aparecer-esquerda"), 500);
+setTimeout(()=> ursoDir.classList.add("aparecer-direita"), 1200);
+
+/* ESCREVE TEXTO INVISÍVEL */
+ctx.fillStyle="white";
+ctx.textAlign="center";
+
+ctx.font="bold 100px Arial";
+ctx.fillText(linha1, canvas.width/2, canvas.height/2 - 50);
+
+ctx.font="bold 80px Arial";
+ctx.fillText(linha2, canvas.width/2, canvas.height/2 + 40);
+
+ctx.font="bold 120px Arial";
+ctx.fillText("❤", canvas.width/2, canvas.height/2 + 150);
+
+const data = ctx.getImageData(0,0,canvas.width,canvas.height);
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+/* PEGAR PONTOS AUTOMATICAMENTE */
+let targets=[];
+for(let y=0;y<canvas.height;y+=6){
+  for(let x=0;x<canvas.width;x+=6){
+    const index=(y*canvas.width+x)*4;
+    if(data.data[index+3]>128){
+      targets.push({x,y});
+    }
+  }
+}
+
+/* PARTÍCULAS */
+let particles=[];
+let i=0;
+
+function disparar(){
+  if(i>=targets.length) return;
+
+  const lado = i % 2 === 0;
+
+  const startX = lado ? 250 : canvas.width - 250;
+  const startY = canvas.height - 120;
+
+  particles.push({
+    x:startX,
+    y:startY,
+    tx:targets[i].x,
+    ty:targets[i].y,
+    angle:Math.random()*Math.PI*2,
+    speed:0.15 + Math.random()*0.05,
+    chegou:false
+  });
+
+  i++;
+}
+
+setTimeout(()=>{
+  setInterval(disparar,4);
+},2000);
+
+function animar(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach(p=>{
+
+    if(!p.chegou){
+
+      p.angle += 0.4;
+      p.x += Math.cos(p.angle)*3;
+
+      p.x += (p.tx - p.x)*p.speed;
+      p.y += (p.ty - p.y)*p.speed;
+
+      const dx = p.tx - p.x;
+      const dy = p.ty - p.y;
+      const distancia = Math.sqrt(dx*dx + dy*dy);
+
+      if(distancia < 2){
+        p.x = p.tx;
+        p.y = p.ty;
+        p.chegou = true;
+      }
+    }
+
+    ctx.fillStyle="hotpink";
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,3,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animar);
+}
+
+animar();
+
+</script>
+
+</body>
+</html>
