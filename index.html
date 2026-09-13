@@ -58,40 +58,6 @@ canvas{
   left:0;
 }
 
-.share-btn{
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  z-index: 10;
-  border: none;
-  background: #fff;
-  color: #8f0c37;
-  padding: 14px 18px;
-  border-radius: 999px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-}
-
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: 30px;
-  transform: translateX(-50%) translateY(20px);
-  background: rgba(255,255,255,0.95);
-  color: #8f0c37;
-  padding: 10px 18px;
-  border-radius: 999px;
-  font-weight: bold;
-  opacity: 0;
-  transition: all 0.3s ease;
-  z-index: 20;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
 </style>
 </head>
 
@@ -101,8 +67,6 @@ canvas{
 <img src="urso-direita.png" class="urso direita">
 
 <canvas id="canvas"></canvas>
-<button class="share-btn" id="shareBtn">Compartilhar link</button>
-<div class="toast" id="toast">Link copiado!</div>
 
 <script>
 
@@ -213,39 +177,6 @@ function animar(){
 
 animar();
 
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 1800);
-}
-
-async function compartilhar() {
-  const url = window.location.href;
-
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: "Mensagem especial",
-        text: "Você é linda",
-        url: url
-      });
-      showToast("Link compartilhado!");
-      return;
-    } catch (error) {
-      console.log("Compartilhamento cancelado");
-    }
-  }
-
-  try {
-    await navigator.clipboard.writeText(url);
-    showToast("Link copiado para compartilhar!");
-  } catch (error) {
-    showToast("Copie este link: " + url);
-  }
-}
-
-document.getElementById("shareBtn").addEventListener("click", compartilhar);
 
 </script>
 
